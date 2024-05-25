@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { Repository } from "typeorm";
 import { User } from "./entites/user.entity";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import {Conflict} from "./errors/user.conflict.error";
+import { Conflict } from "./errors/user.conflict.error";
 
 jest.mock("bcrypt", () => ({
   genSalt: jest.fn().mockResolvedValue("mockSalt"),
