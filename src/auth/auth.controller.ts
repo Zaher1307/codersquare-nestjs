@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
-import { SignUpDto } from "src/auth/dtos/auth.signup.dto";
+import { SignUpDto } from "./dtos/auth.signup.dto";
 import { UserInterceptor } from "./auth.signup.interceptor";
 import { AuthExceptionFilter } from "./auth.exception.filter";
 import { AuthService } from "./auth.service";

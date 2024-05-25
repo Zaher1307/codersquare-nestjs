@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
 import { User } from "./user/entites/user.entity";
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { User } from "./user/entites/user.entity";
       }),
     }),
     AuthModule,
+    PostModule,
   ],
   controllers: [],
   providers: [],

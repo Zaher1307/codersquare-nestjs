@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Catch,
 } from "@nestjs/common";
-import { Conflict } from "src/user/errors/user.conflict.error";
+import { Conflict } from "../user/errors/user.conflict.error";
 import { Unauthorized } from "./errors/auth.unauthorized.error";
 
 @Catch(Conflict, Unauthorized)
