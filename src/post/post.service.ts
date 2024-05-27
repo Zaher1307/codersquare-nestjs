@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from "@nestjs/common";
-import { CreatePostDto } from "./dto/create-post.dto";
-import { UpdatePostDto } from "./dto/update-post.dto";
+import { CreatePostDto } from "./dtos/create-post.dto";
+import { UpdatePostDto } from "./dtos/update-post.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Post } from "./entities/post.entity";
@@ -13,18 +13,22 @@ export class PostService {
     private readonly repo: Repository<Post>
   ) {}
 
+  // ------------------------------------------------------------------------//
+
   @UseGuards(AuthGuard)
-  create(createPostDto: CreatePostDto, userId: string): Promise<Post> {
+  create(createPostDto: CreatePostDto, userId: string) {
     const post = {
       payload: createPostDto.payload,
       userId: userId,
       createdAt: new Date(),
     };
 
-    return this.repo.save(post);
+    return this.repo.save(this.repo.create(post));
   }
 
-  findUserPosts(userId: string): Promise<Post[]> {
+  // ------------------------------------------------------------------------//
+
+  findUserPosts(userId: string) {
     return this.repo.find({
       where: {
         userId,
@@ -32,7 +36,9 @@ export class PostService {
     });
   }
 
-  findOne(id: string): Promise<Post> {
+  // ------------------------------------------------------------------------//
+
+  findOne(id: string) {
     return this.repo.findOne({
       where: {
         id,
@@ -40,10 +46,14 @@ export class PostService {
     });
   }
 
-  // update(id: string, updatePostDto: UpdatePostDto) {
-  //   return `This action updates a #${id} post`;
-  // }
-  //
+  // ------------------------------------------------------------------------//
+
+  update(id: string, updatePostDto: UpdatePostDto) {
+    return `This action updates a #${id} post ${updatePostDto}`;
+  }
+
+  // ------------------------------------------------------------------------//
+
   // remove(id: string) {
   //   return `This action removes a #${id} post`;
   // }

@@ -4,10 +4,10 @@ import {
   HttpStatus,
   Catch,
 } from "@nestjs/common";
-import { Conflict } from "../user/errors/user.conflict.error";
-import { Unauthorized } from "./errors/auth.unauthorized.error";
+import { UserExists } from "../user/errors/user.user-exists.error";
+import { InvalidCredentials } from "./errors/auth.invalid-credentials.error";
 
-@Catch(Conflict, Unauthorized)
+@Catch(UserExists, InvalidCredentials)
 export class AuthExceptionFilter implements ExceptionFilter {
   catch(err: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -16,10 +16,10 @@ export class AuthExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = "Internal Server Error";
 
-    if (err instanceof Conflict) {
+    if (err instanceof UserExists) {
       status = HttpStatus.CONFLICT;
       message = err.message;
-    } else if (err instanceof Unauthorized) {
+    } else if (err instanceof InvalidCredentials) {
       status = HttpStatus.UNAUTHORIZED;
       message = err.message;
     }

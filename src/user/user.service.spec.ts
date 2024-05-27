@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { Repository } from "typeorm";
 import { User } from "./entites/user.entity";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { Conflict } from "./errors/user.conflict.error";
+import { UserExists } from "./errors/user.conflict.error";
 
 jest.mock("bcrypt", () => ({
   genSalt: jest.fn().mockResolvedValue("mockSalt"),
@@ -47,7 +47,7 @@ describe("UserService", () => {
         password: "mockHash",
       } as User);
 
-      const result = await service.signup(user);
+      const result = await service.create(user);
 
       expect(result).toEqual({
         ...user,
@@ -76,7 +76,7 @@ describe("UserService", () => {
       jest.spyOn(repo, "findOne").mockResolvedValueOnce(user as User);
       jest.spyOn(repo, "save").mockResolvedValueOnce(user as User);
 
-      await expect(service.signup(user)).rejects.toThrow(Conflict);
+      await expect(service.create(user)).rejects.toThrow(UserExists);
       expect(repo.findOne).toHaveBeenCalledWith({
         where: [
           { username: user.username.toLowerCase() },

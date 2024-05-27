@@ -3,52 +3,47 @@ import { User } from "./entites/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { genSalt, hash } from "bcrypt";
-import { Conflict } from "./errors/user.conflict.error";
+import { UserExists } from "./errors/user.user-exists.error";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly repo: Repository<User>
+    private readonly repo: Repository<User>,
+    private readonly configService: ConfigService
   ) {}
 
-  async signup(user: Partial<User>): Promise<User> {
-    const normalizedEmail = user.email.toLowerCase();
-    const existingUser = await this.repo.findOne({
-      where: [
-        { username: user.username.toLowerCase() },
-        { email: normalizedEmail },
-      ],
-    });
+  // ------------------------------------------------------------------------//
+
+  async create(user: Partial<User>) {
+    const existingUser = await this.findUserByEmail(user.email);
 
     if (existingUser) {
-      throw new Conflict("Username or email already exists");
+      throw new UserExists("Username or email already exists");
     }
 
-    const salt = await generateSalt();
-    const passwordHash = await hashPassword(user.password, salt);
-    const newUser = {
-      ...user,
-      password: passwordHash,
-    };
+    const salt = await this.generateSalt();
+    user.password = await this.hashPassword(user.password, salt);
 
-    return this.repo.save(newUser);
+    return await this.repo.save(this.repo.create(user));
   }
+
+  // ------------------------------------------------------------------------//
 
   async findUserByEmail(email: string): Promise<User> {
-    return this.repo.findOne({
-      where: {
-        email: email,
-      },
-    });
+    return this.repo.findOne({ where: { email } });
   }
-}
 
-async function generateSalt() {
-  const saltRounds = 10;
-  return await genSalt(saltRounds);
-}
+  // ------------------------------------------------------------------------//
 
-async function hashPassword(password: string, salt: string) {
-  return await hash(password, salt);
+  private async generateSalt() {
+    return await genSalt(parseInt(this.configService.get("SALT_ROUNDS")));
+  }
+
+  // ------------------------------------------------------------------------//
+
+  private async hashPassword(password: string, salt: string) {
+    return await hash(password, salt);
+  }
 }
