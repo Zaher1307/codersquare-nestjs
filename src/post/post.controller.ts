@@ -3,16 +3,19 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Request,
   ParseUUIDPipe,
+  UseFilters,
+  Patch,
 } from "@nestjs/common";
 import { PostService } from "./post.service";
 import { CreatePostDto } from "./dtos/create-post.dto";
 import { AuthGuard } from "../auth/auth.jwt.guard";
+import { PostExceptionFilter } from "./post.exception.filter";
+import { UpdatePostDto } from "./dtos/update-post.dto";
 
 @Controller("posts")
 export class PostController {
@@ -40,15 +43,23 @@ export class PostController {
     return this.postService.findOne(id);
   }
 
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() updatePostDto: UpdatePostDto) {
-  //   return this.postService.update(id, updatePostDto);
-  // }
+  // ------------------------------------------------------------------------//
+
+  @UseGuards(AuthGuard)
+  @UseFilters(PostExceptionFilter)
+  @Patch()
+  update(@Request() req: any, @Body() post: UpdatePostDto) {
+    const userId = req.user.sub;
+    return this.postService.update(userId, post);
+  }
 
   // ------------------------------------------------------------------------//
 
-  // @Delete(":id")
-  // remove(@Param("id") id: string) {
-  //   return this.postService.remove(id);
-  // }
+  @UseGuards(AuthGuard)
+  @UseFilters(PostExceptionFilter)
+  @Delete(":id")
+  remove(@Request() req: any, @Param("id") id: string) {
+    const userId = req.user.sub;
+    return this.postService.remove(userId, id);
+  }
 }

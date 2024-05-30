@@ -5,12 +5,17 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Post } from "./entities/post.entity";
 import { AuthGuard } from "../auth/auth.jwt.guard";
+import { User } from "../user/entites/user.entity";
+import { Forbidden } from "./errors/post.forbidden.error";
+import { PostNotFound } from "./errors/post.not-found.error";
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
-    private readonly repo: Repository<Post>
+    private readonly postRepository: Repository<Post>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   // ------------------------------------------------------------------------//
@@ -23,13 +28,13 @@ export class PostService {
       createdAt: new Date(),
     };
 
-    return this.repo.save(this.repo.create(post));
+    return this.postRepository.save(this.postRepository.create(post));
   }
 
   // ------------------------------------------------------------------------//
 
   findUserPosts(userId: string) {
-    return this.repo.find({
+    return this.postRepository.find({
       where: {
         userId,
       },
@@ -39,7 +44,7 @@ export class PostService {
   // ------------------------------------------------------------------------//
 
   findOne(id: string) {
-    return this.repo.findOne({
+    return this.postRepository.findOne({
       where: {
         id,
       },
@@ -48,13 +53,35 @@ export class PostService {
 
   // ------------------------------------------------------------------------//
 
-  update(id: string, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post ${updatePostDto}`;
+  async update(userId: string, updatePostDto: UpdatePostDto) {
+    const post = await this.findOne(updatePostDto.id);
+    if (!post) {
+      throw new PostNotFound();
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (user.id !== post.userId) {
+      throw new Forbidden();
+    }
+
+    post.payload = updatePostDto.payload;
+
+    return this.postRepository.save(this.postRepository.create(post));
   }
 
   // ------------------------------------------------------------------------//
 
-  // remove(id: string) {
-  //   return `This action removes a #${id} post`;
-  // }
+  async remove(userId: string, id: string) {
+    const post = await this.findOne(id);
+    if (!post) {
+      throw new PostNotFound();
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (user.id !== post.userId) {
+      throw new Forbidden();
+    }
+
+    this.postRepository.delete({ id });
+  }
 }

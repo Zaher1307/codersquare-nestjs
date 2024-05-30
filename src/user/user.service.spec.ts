@@ -68,9 +68,13 @@ describe("UserService", () => {
     jest.clearAllMocks();
   });
 
+  // ------------------------------------------------------------------------//
+
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
+
+  // ------------------------------------------------------------------------//
 
   describe("signup", () => {
     it("should signup a new user with unique username and email", async () => {
@@ -85,6 +89,8 @@ describe("UserService", () => {
       expect(repo.save).toHaveBeenCalled();
     });
 
+    // ------------------------------------------------------------------------//
+
     it("should throw Conflict error if username or email already exists", async () => {
       repoMock.findOne.mockImplementation((id: string) =>
         Promise.resolve(outputUser as User)
@@ -96,6 +102,8 @@ describe("UserService", () => {
     });
   });
 
+  // ------------------------------------------------------------------------//
+
   describe("findUserByEmail", () => {
     it("should find a user by email", async () => {
       repoMock.findOne.mockImplementation((id: string) =>
@@ -106,6 +114,8 @@ describe("UserService", () => {
       expect(result).toEqual(outputUser);
       expect(repo.findOne).toHaveBeenCalled();
     });
+
+    // ------------------------------------------------------------------------//
 
     it("should return null if user is not found by email", async () => {
       repoMock.findOne.mockImplementation((id: string) =>

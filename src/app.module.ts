@@ -22,6 +22,7 @@ import { Post } from "./post/entities/post.entity";
         password: config.get("POSTGRES_PASSWORD"),
         database: config.get("POSTGRES_DB"),
         entities: [User, Post],
+        ssl: true,
         synchronize: true,
       }),
     }),

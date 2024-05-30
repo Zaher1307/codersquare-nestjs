@@ -10,7 +10,7 @@ import { ConfigService } from "@nestjs/config";
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly repo: Repository<User>,
+    private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService
   ) {}
 
@@ -26,13 +26,13 @@ export class UserService {
     const salt = await this.generateSalt();
     user.password = await this.hashPassword(user.password, salt);
 
-    return await this.repo.save(this.repo.create(user));
+    return await this.userRepository.save(this.userRepository.create(user));
   }
 
   // ------------------------------------------------------------------------//
 
   async findUserByEmail(email: string): Promise<User> {
-    return this.repo.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email } });
   }
 
   // ------------------------------------------------------------------------//
