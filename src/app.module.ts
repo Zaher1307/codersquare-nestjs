@@ -10,7 +10,7 @@ import { Post } from "./post/entities/post.entity";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
+      envFilePath: `.env.${process.env.NODE_ENV || "dev"}`,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
