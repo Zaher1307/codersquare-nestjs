@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseFilters } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseFilters,
+} from "@nestjs/common";
 import { SignUpDto } from "./dtos/auth.signup.dto";
 import { AuthExceptionFilter } from "./auth.exception.filter";
 import { AuthService } from "./auth.service";
@@ -22,5 +29,10 @@ export class AuthController {
   @Post("login")
   login(@Body() user: LogInDto) {
     return this.authService.login(user);
+  }
+
+  @Get("healthz")
+  health() {
+    return "hello lasting dynamics";
   }
 }
