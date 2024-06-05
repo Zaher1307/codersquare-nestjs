@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codersquare-nestjs
+  template:
+    metadata:
+      labels:
+        app: codersquare-nestjs
+    spec:
+      containers:
+      - name: codersquare-nestjs
+        image: zaher1307/codersquare-nestjs:latest
+        ports:
+        - containerPort: 3000
