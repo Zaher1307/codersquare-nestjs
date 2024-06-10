@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Get,
+  // Get,
   HttpCode,
   Post,
   UseFilters,
@@ -31,8 +31,8 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Get("healthz")
-  health() {
-    return "hello lasting dynamics";
-  }
+  // @Get("healthz")
+  // health() {
+  //   return "hello lasting dynamics";
+  // }
 }
